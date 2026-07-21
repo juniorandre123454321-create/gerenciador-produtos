@@ -5,13 +5,12 @@ import hashlib
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'sua_chave_secreta_muito_segura_aqui'  # Troque por uma chave real
+app.secret_key = 'sua_chave_secreta_muito_segura_aqui'
 
-# Arquivos para armazenar dados
 ARQUIVO_PRODUTOS = 'produtos.json'
 ARQUIVO_USUARIOS = 'usuarios.json'
 
-# ========== FUNÇÕES DE USUÁRIO ==========
+# FUNCOES DE USUARIO
 def carregar_usuarios():
     if os.path.exists(ARQUIVO_USUARIOS):
         with open(ARQUIVO_USUARIOS, 'r', encoding='utf-8') as f:
@@ -25,7 +24,7 @@ def salvar_usuarios(usuarios):
 def hash_senha(senha):
     return hashlib.sha256(senha.encode()).hexdigest()
 
-# ========== FUNÇÕES DE PRODUTO ==========
+# FUNCOES DE PRODUTO
 def carregar_produtos():
     if os.path.exists(ARQUIVO_PRODUTOS):
         with open(ARQUIVO_PRODUTOS, 'r', encoding='utf-8') as f:
@@ -36,35 +35,29 @@ def salvar_produtos(produtos):
     with open(ARQUIVO_PRODUTOS, 'w', encoding='utf-8') as f:
         json.dump(produtos, f, ensure_ascii=False, indent=2)
 
-# ========== DECORADOR DE LOGIN ==========
+# DECORADOR DE LOGIN
 def login_obrigatorio(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'usuario_id' not in session:
-            flash('Faça login para acessar esta página!', 'danger')
+            flash('Faça login para acessar esta pagina.', 'danger')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
-# ========== HTML TEMPLATES ==========
-
-# Template de Login
+# TEMPLATES
 LOGIN_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Gerenciador</title>
+    <title>Login</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f0f2f5;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -72,70 +65,73 @@ LOGIN_TEMPLATE = """
         }
         .login-container {
             background: white;
-            border-radius: 20px;
+            border-radius: 8px;
             padding: 40px;
-            width: 400px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 380px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         h1 {
             text-align: center;
-            color: #333;
+            color: #1a1a1a;
             margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 600;
         }
         .form-group {
             margin-bottom: 20px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: 600;
+            margin-bottom: 6px;
+            color: #4a4a4a;
+            font-weight: 500;
+            font-size: 14px;
         }
         input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
             font-size: 14px;
-            transition: 0.3s;
+            transition: 0.2s;
         }
         input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
         }
         .btn {
             width: 100%;
-            padding: 12px;
-            background: #667eea;
+            padding: 10px;
+            background: #4a6cf7;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
         }
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #3a5cd9;
         }
         .links {
             text-align: center;
             margin-top: 20px;
+            font-size: 14px;
         }
         .links a {
-            color: #667eea;
+            color: #4a6cf7;
             text-decoration: none;
-            font-weight: 600;
         }
         .links a:hover {
             text-decoration: underline;
         }
         .alert {
-            padding: 12px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            border-radius: 4px;
             margin-bottom: 20px;
+            font-size: 14px;
         }
         .alert-success {
             background: #d4edda;
@@ -151,8 +147,7 @@ LOGIN_TEMPLATE = """
 </head>
 <body>
     <div class="login-container">
-        <h1>🔐 Login</h1>
-        
+        <h1>Acesso</h1>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -160,7 +155,6 @@ LOGIN_TEMPLATE = """
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        
         <form method="POST">
             <div class="form-group">
                 <label>Email</label>
@@ -172,32 +166,26 @@ LOGIN_TEMPLATE = """
             </div>
             <button type="submit" class="btn">Entrar</button>
         </form>
-        
         <div class="links">
-            <p>Não tem conta? <a href="{{ url_for('cadastro') }}">Cadastre-se</a></p>
+            <p>Nao tem conta? <a href="{{ url_for('cadastro') }}">Cadastre-se</a></p>
         </div>
     </div>
 </body>
 </html>
 """
 
-# Template de Cadastro
 CADASTRO_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - Gerenciador</title>
+    <title>Cadastro</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f0f2f5;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -205,70 +193,73 @@ CADASTRO_TEMPLATE = """
         }
         .cadastro-container {
             background: white;
-            border-radius: 20px;
+            border-radius: 8px;
             padding: 40px;
-            width: 450px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 420px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         h1 {
             text-align: center;
-            color: #333;
+            color: #1a1a1a;
             margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 600;
         }
         .form-group {
             margin-bottom: 20px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: 600;
+            margin-bottom: 6px;
+            color: #4a4a4a;
+            font-weight: 500;
+            font-size: 14px;
         }
         input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
             font-size: 14px;
-            transition: 0.3s;
+            transition: 0.2s;
         }
         input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
         }
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: #28a745;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
         }
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            background: #218838;
         }
         .links {
             text-align: center;
             margin-top: 20px;
+            font-size: 14px;
         }
         .links a {
-            color: #667eea;
+            color: #4a6cf7;
             text-decoration: none;
-            font-weight: 600;
         }
         .links a:hover {
             text-decoration: underline;
         }
         .alert {
-            padding: 12px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            border-radius: 4px;
             margin-bottom: 20px;
+            font-size: 14px;
         }
         .alert-danger {
             background: #f8d7da;
@@ -279,8 +270,7 @@ CADASTRO_TEMPLATE = """
 </head>
 <body>
     <div class="cadastro-container">
-        <h1>📝 Criar Conta</h1>
-        
+        <h1>Criar Conta</h1>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -288,7 +278,6 @@ CADASTRO_TEMPLATE = """
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        
         <form method="POST">
             <div class="form-group">
                 <label>Nome Completo</label>
@@ -300,20 +289,18 @@ CADASTRO_TEMPLATE = """
             </div>
             <div class="form-group">
                 <label>Senha</label>
-                <input type="password" name="senha" required placeholder="Mínimo 6 caracteres" minlength="6">
+                <input type="password" name="senha" required placeholder="Minimo 6 caracteres" minlength="6">
             </div>
             <button type="submit" class="btn">Cadastrar</button>
         </form>
-        
         <div class="links">
-            <p>Já tem conta? <a href="{{ url_for('login') }}">Faça login</a></p>
+            <p>Ja tem conta? <a href="{{ url_for('login') }}">Faça login</a></p>
         </div>
     </div>
 </body>
 </html>
 """
 
-# Template Principal (com header de usuário)
 TEMPLATE_PRINCIPAL = """
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -322,38 +309,33 @@ TEMPLATE_PRINCIPAL = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Produtos</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f0f2f5;
             min-height: 100vh;
             padding: 20px;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
+            border-radius: 8px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             padding-bottom: 20px;
-            border-bottom: 2px solid #eee;
+            border-bottom: 1px solid #e0e0e0;
         }
         .header h1 {
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            color: #1a1a1a;
+            font-size: 22px;
+            font-weight: 600;
         }
         .user-info {
             display: flex;
@@ -361,105 +343,108 @@ TEMPLATE_PRINCIPAL = """
             gap: 15px;
         }
         .user-info span {
-            color: #555;
-            font-weight: 600;
+            color: #4a4a4a;
+            font-weight: 500;
+            font-size: 14px;
         }
         .btn-sair {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
+            padding: 6px 18px;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
         }
         .btn-sair:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+            background: #c82333;
         }
         .form-produto {
             background: #f8f9fa;
             padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
+            border-radius: 6px;
+            margin-bottom: 25px;
             display: grid;
             grid-template-columns: 1fr 1fr 1fr auto;
-            gap: 15px;
+            gap: 12px;
             align-items: end;
         }
         .form-produto input {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
             font-size: 14px;
-            transition: 0.3s;
+            transition: 0.2s;
         }
         .form-produto input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
         }
         .btn {
-            padding: 10px 25px;
+            padding: 8px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
             text-decoration: none;
             display: inline-block;
         }
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            opacity: 0.9;
         }
         .btn-primary {
-            background: #667eea;
+            background: #4a6cf7;
             color: white;
         }
         .btn-editar {
             background: #17a2b8;
             color: white;
-            padding: 5px 15px;
+            padding: 4px 12px;
             font-size: 12px;
         }
         .btn-excluir {
             background: #dc3545;
             color: white;
-            padding: 5px 15px;
+            padding: 4px 12px;
             font-size: 12px;
         }
         .tabela-produtos {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
+            font-size: 14px;
         }
         .tabela-produtos th {
-            background: #667eea;
-            color: white;
-            padding: 12px;
+            background: #f8f9fa;
+            color: #1a1a1a;
+            padding: 10px 12px;
             text-align: left;
+            border-bottom: 2px solid #e0e0e0;
+            font-weight: 600;
         }
         .tabela-produtos td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
         }
         .tabela-produtos tr:hover {
             background: #f8f9fa;
         }
         .sem-produtos {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: #999;
-            font-size: 18px;
+            font-size: 16px;
         }
         .alert {
-            padding: 15px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            border-radius: 4px;
             margin-bottom: 20px;
-            animation: slideDown 0.5s ease;
+            font-size: 14px;
         }
         .alert-success {
             background: #d4edda;
@@ -471,16 +456,6 @@ TEMPLATE_PRINCIPAL = """
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
         .acoes {
             display: flex;
             gap: 5px;
@@ -489,9 +464,10 @@ TEMPLATE_PRINCIPAL = """
             margin-top: 20px;
             padding: 15px;
             background: #f8f9fa;
-            border-radius: 8px;
-            font-weight: bold;
-            color: #333;
+            border-radius: 4px;
+            font-weight: 500;
+            color: #1a1a1a;
+            font-size: 14px;
         }
         @media (max-width: 768px) {
             .form-produto {
@@ -502,10 +478,11 @@ TEMPLATE_PRINCIPAL = """
                 gap: 15px;
             }
             .tabela-produtos {
-                font-size: 14px;
+                font-size: 13px;
             }
             .acoes {
                 flex-direction: column;
+                gap: 3px;
             }
         }
     </style>
@@ -513,14 +490,13 @@ TEMPLATE_PRINCIPAL = """
 <body>
     <div class="container">
         <div class="header">
-            <h1>📦 Gerenciador de Produtos</h1>
+            <h1>Gerenciador de Produtos</h1>
             <div class="user-info">
-                <span>👋 Olá, {{ session.nome_usuario }}!</span>
+                <span>Olá, {{ session.nome_usuario }}</span>
                 <a href="{{ url_for('logout') }}" class="btn-sair">Sair</a>
             </div>
         </div>
         
-        <!-- Mensagens -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -529,27 +505,25 @@ TEMPLATE_PRINCIPAL = """
             {% endif %}
         {% endwith %}
         
-        <!-- Formulário para adicionar/editar -->
         <form method="POST" class="form-produto">
             <input type="hidden" name="id_editar" value="{{ id_editar or '' }}">
             <input type="text" name="nome" placeholder="Nome do produto" value="{{ nome_editar or '' }}" required>
-            <input type="number" name="preco" placeholder="Preço (R$)" step="0.01" value="{{ preco_editar or '' }}" required>
+            <input type="number" name="preco" placeholder="Preco (R$)" step="0.01" value="{{ preco_editar or '' }}" required>
             <input type="number" name="quantidade" placeholder="Quantidade" value="{{ quantidade_editar or '' }}" required>
             <button type="submit" class="btn btn-primary">
                 {% if id_editar %}Atualizar{% else %}Adicionar{% endif %}
             </button>
         </form>
         
-        <!-- Tabela de produtos -->
         <table class="tabela-produtos">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Produto</th>
-                    <th>Preço</th>
+                    <th>Preco</th>
                     <th>Quantidade</th>
                     <th>Total</th>
-                    <th>Ações</th>
+                    <th>Acoes</th>
                 </tr>
             </thead>
             <tbody>
@@ -563,8 +537,8 @@ TEMPLATE_PRINCIPAL = """
                         <td>R$ {{ "%.2f"|format(p.preco * p.quantidade) }}</td>
                         <td>
                             <div class="acoes">
-                                <a href="{{ url_for('editar', id=p.id) }}" class="btn btn-editar">✏️ Editar</a>
-                                <a href="{{ url_for('excluir', id=p.id) }}" class="btn btn-excluir" onclick="return confirm('Tem certeza que deseja excluir este produto?')">🗑️ Excluir</a>
+                                <a href="{{ url_for('editar', id=p.id) }}" class="btn btn-editar">Editar</a>
+                                <a href="{{ url_for('excluir', id=p.id) }}" class="btn btn-excluir" onclick="return confirm('Tem certeza que deseja excluir este produto?')">Excluir</a>
                             </div>
                         </td>
                     </tr>
@@ -586,8 +560,7 @@ TEMPLATE_PRINCIPAL = """
 </html>
 """
 
-# ========== ROTAS ==========
-
+# ROTAS
 @app.route('/')
 def home():
     if 'usuario_id' in session:
@@ -607,10 +580,10 @@ def login():
             session['usuario_id'] = usuario['id']
             session['nome_usuario'] = usuario['nome']
             session['email_usuario'] = usuario['email']
-            flash('Login realizado com sucesso!', 'success')
+            flash('Login realizado com sucesso.', 'success')
             return redirect(url_for('index'))
         else:
-            flash('Email ou senha incorretos!', 'danger')
+            flash('Email ou senha incorretos.', 'danger')
     
     return render_template_string(LOGIN_TEMPLATE)
 
@@ -623,12 +596,10 @@ def cadastro():
         
         usuarios = carregar_usuarios()
         
-        # Verificar se email já existe
         if any(u['email'] == email for u in usuarios):
-            flash('Este email já está cadastrado!', 'danger')
+            flash('Este email ja esta cadastrado.', 'danger')
             return render_template_string(CADASTRO_TEMPLATE)
         
-        # Criar novo usuário
         novo_id = max([u['id'] for u in usuarios], default=0) + 1
         usuarios.append({
             'id': novo_id,
@@ -638,7 +609,7 @@ def cadastro():
         })
         salvar_usuarios(usuarios)
         
-        flash('Cadastro realizado com sucesso! Faça login.', 'success')
+        flash('Cadastro realizado com sucesso. Faca login.', 'success')
         return redirect(url_for('login'))
     
     return render_template_string(CADASTRO_TEMPLATE)
@@ -646,7 +617,7 @@ def cadastro():
 @app.route('/logout')
 def logout():
     session.clear()
-    flash('Você saiu do sistema.', 'success')
+    flash('Voce saiu do sistema.', 'success')
     return redirect(url_for('login'))
 
 @app.route('/gerenciar', methods=['GET', 'POST'])
@@ -668,7 +639,7 @@ def index():
                     p['quantidade'] = quantidade
                     break
             salvar_produtos(produtos)
-            flash('Produto atualizado com sucesso!', 'success')
+            flash('Produto atualizado com sucesso.', 'success')
         else:
             novo_id = max([p['id'] for p in produtos], default=0) + 1
             produtos.append({
@@ -678,7 +649,7 @@ def index():
                 'quantidade': quantidade
             })
             salvar_produtos(produtos)
-            flash('Produto adicionado com sucesso!', 'success')
+            flash('Produto adicionado com sucesso.', 'success')
         
         return redirect(url_for('index'))
     
@@ -714,7 +685,7 @@ def excluir(id):
     produtos = carregar_produtos()
     produtos = [p for p in produtos if p['id'] != id]
     salvar_produtos(produtos)
-    flash('Produto excluído com sucesso!', 'danger')
+    flash('Produto excluido com sucesso.', 'danger')
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
